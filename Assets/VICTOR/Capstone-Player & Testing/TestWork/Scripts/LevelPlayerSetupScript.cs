@@ -22,9 +22,14 @@ public class LevelPlayerSetupScript : MonoBehaviour {
     [Tooltip("Canvas filler for Pause Menu. Meant to be modified later.")]
     public GameObject pauseCanvas;
 
+    public GameObject WinScreen;
+    public GameObject LoseScreen;
+
     void Start()
     {
         pauseCanvas.SetActive(false);
+        WinScreen.SetActive(false);
+        LoseScreen.SetActive(false);
     }
 
     /// <summary>
@@ -85,5 +90,17 @@ public class LevelPlayerSetupScript : MonoBehaviour {
                                     player2StartLocation.transform.rotation);
         player2.GetComponent<XCharacterControllerLancer>().playerIndex = PlayerIndex.Two;
         player2.transform.parent = playerContainer.transform;
+    }
+
+    public void LoseGame()
+    {
+        Time.timeScale = 0;
+        LoseScreen.SetActive(true);
+    }
+
+    public void WinGame()
+    {
+        Time.timeScale = 0;
+        WinScreen.SetActive(true);
     }
 }

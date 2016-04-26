@@ -26,6 +26,8 @@ public class ScriptDetectionRadius : MonoBehaviour
     public bool isColliding = false; //this is used to avoid on trigger stay
     //public AttackScript attackThing;
 
+    //public NavMeshAgent navi;
+
     void Awake()
     {
         firstAwake = true;
@@ -118,6 +120,12 @@ public class ScriptDetectionRadius : MonoBehaviour
             eMove.enabled = false;
             rotate.enabled = false;
             isColliding = false;
+            //if(navi != null && navi.enabled)
+            //{
+
+            //    navi.velocity = Vector3.zero;
+            //    navi.Stop();
+            //}
             //            if(eMove.isLerping)
             //            {
             //				isDetecting = false;

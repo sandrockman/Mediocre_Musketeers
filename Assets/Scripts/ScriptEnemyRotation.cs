@@ -10,6 +10,7 @@ public class ScriptEnemyRotation : MonoBehaviour {
     public bool canRotate = false;
     [Tooltip("This enemy's detection script.")]
     public ScriptDetectionRadius detect;
+    //public NavMeshAgent navi;
     // Use this for initialization
     void Enabled()
     {
@@ -31,6 +32,7 @@ public class ScriptEnemyRotation : MonoBehaviour {
             Debug.DrawRay(transform.position, blahVect, Color.magenta);
 
             transform.GetComponent<Rigidbody>().rotation = Quaternion.LookRotation(blahVect);
+            
         }
         
          

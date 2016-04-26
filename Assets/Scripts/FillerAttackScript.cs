@@ -17,6 +17,8 @@ public class FillerAttackScript : MonoBehaviour {
     [Tooltip("Reference to the parent enemy's detection script.")]
     public ScriptDetectionRadius detect;
 
+    //public NavMeshAgent navi;
+
 	// Use this for initialization
 	void Start () {
         //instantiate proper attack
@@ -40,6 +42,12 @@ public class FillerAttackScript : MonoBehaviour {
                 //gameObject.GetComponentInParent<ScriptEnemyMovement>().isMovementRunning = false; //prevent enemy from moving during attack
                 //gameObject.GetComponentInParent<Transform>().GetComponentInChildren<ScriptDetectionRadius>().enabled = false;
                 detect.enabled = false;
+                //if (navi != null)
+                //{
+                //    Debug.Log("rangedattacknavi");
+                //    navi.velocity = Vector3.zero;
+                //    navi.enabled = false;
+                //}
             }
             else
             {
@@ -50,13 +58,19 @@ public class FillerAttackScript : MonoBehaviour {
                 //gameObject.GetComponentInParent<Transform>().GetComponentInChildren<ScriptDetectionRadius>().enabled = false;
                 detect.enabled = false;
                 Debug.Log(detect.enabled);
+                //if (navi != null)
+                //{
+                //    Debug.Log("meleeattacknavi");
+                //    navi.velocity = Vector3.zero;
+                //    navi.enabled = false;
+                //}
             }
         }
     }
 
     void OnTriggerExit(Collider other)
     {
-        Debug.Log("AttackRadius Exited by: " + other.tag + " and canAttack " + canAttack);
+        //Debug.Log("AttackRadius Exited by: " + other.tag + " and canAttack " + canAttack);
         if(other.tag == "Player")
         {
             //detect.enabled = true;
@@ -74,6 +88,10 @@ public class FillerAttackScript : MonoBehaviour {
                 //gameObject.GetComponentInParent<ScriptEnemyMovement>().enabled = true;
                 detect.enabled = true;
                 canAttack = true;
+                //if (navi != null)
+                //{
+                //    navi.enabled = true;
+                //}
                 this.enabled = false;
             }
         }
@@ -117,6 +135,10 @@ public class FillerAttackScript : MonoBehaviour {
         //Debug.Log("rangedenemy moving" + gameObject.GetComponentInParent<ScriptEnemyMovement>().isMovementRunning);
         canAttack = true;
         detect.enabled = true;
+        //if (navi != null)
+        //{
+        //    navi.enabled = true;
+        //}
         enabled = false;
     }
 
@@ -143,6 +165,10 @@ public class FillerAttackScript : MonoBehaviour {
         canAttack = true;
         //gameObject.GetComponentInParent<ScriptEnemyMovement>().enabled = true;
         detect.enabled = true;
+        //if (navi != null)
+        //{
+        //    navi.enabled = true;
+        //}
         enabled = false;
     }
 
@@ -160,6 +186,10 @@ public class FillerAttackScript : MonoBehaviour {
     {
         yield return new WaitForSeconds(gameObject.GetComponentInParent<ScriptEnemyClass>().reactionTime/60);
         gameObject.GetComponentInParent<ScriptEnemyMovement>().enabled = true;
+        //if (navi != null)
+        //{
+        //    navi.enabled = true;
+        //}
         detect.enabled = true;
     }
 

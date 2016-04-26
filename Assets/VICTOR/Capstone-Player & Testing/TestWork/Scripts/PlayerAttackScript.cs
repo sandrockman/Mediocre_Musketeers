@@ -11,11 +11,13 @@ public class PlayerAttackScript : MonoBehaviour {
     public GameObject leftSideAttackBox;
     public GameObject rightSideAttackBox;
     public GameObject trampleAttackBox;
+    public GameObject shieldSphere;
 
     //will probably be replaced with mechanim
     public float forwardAttackTime = 0.5f;
     public float lanceAttackTime = 1.0f;
     public float sideAttackTime = 0.5f;
+    public float shieldTime = 2.0f;
 
     //attack cooldown time.
     public float cooldownTime = 0.7f;
@@ -30,6 +32,8 @@ public class PlayerAttackScript : MonoBehaviour {
         leftSideAttackBox.SetActive(false);
         rightSideAttackBox.SetActive(false);
         trampleAttackBox.SetActive(false);
+        if(shieldSphere != null)
+            shieldSphere.SetActive(false);
 	}
 	
 	// Update is called once per frame
@@ -79,6 +83,22 @@ public class PlayerAttackScript : MonoBehaviour {
         rightSideAttackBox.SetActive(true);
         yield return new WaitForSeconds(sideAttackTime);
         rightSideAttackBox.SetActive(false);
+        yield return new WaitForSeconds(cooldownTime);
+        canAttack = true;
+    }
+
+    public void StartShield()
+    {
+        StartCoroutine("ShieldMove");
+    }
+
+    IEnumerator ShieldMove()
+    {
+        canAttack = false;
+        if(shieldSphere != null)
+            shieldSphere.SetActive(true);
+        yield return new WaitForSeconds(sideAttackTime);
+        shieldSphere.SetActive(false);
         yield return new WaitForSeconds(cooldownTime);
         canAttack = true;
     }

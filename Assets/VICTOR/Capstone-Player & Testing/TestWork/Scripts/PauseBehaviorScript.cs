@@ -13,6 +13,7 @@ public class PauseBehaviorScript : MonoBehaviour {
         Time.timeScale = 0;
         GameObject pCanvas = GameObject.Find("PauseCanvas") as GameObject;
         //pCanvas.enabled = true;
+
         pCanvas.SetActive(true);
     }
 
@@ -20,17 +21,25 @@ public class PauseBehaviorScript : MonoBehaviour {
     {
         GameObject pCanvas = GameObject.Find("PauseCanvas") as GameObject;
         //pCanvas.enabled = false;
-        pCanvas.SetActive(false);
+        if(pCanvas != null)
+            pCanvas.SetActive(false);
         Time.timeScale = 1;
     }
-	
-	public void _QuitGame()
+
+    public void _QuitGame()
     {
         GameObject pCanvas = GameObject.Find("PauseCanvas") as GameObject;
         //pCanvas.enabled = false;
-        pCanvas.SetActive(false);
+        if (pCanvas != null)
+            pCanvas.SetActive(false);
         Time.timeScale = 1;
         SceneManager.LoadScene("MainMenuScene");
         Debug.Log("Quit Game.");
+    }
+
+    public void _RestartGame()
+    {
+        
+        SceneManager.LoadScene("Level 1");
     }
 }

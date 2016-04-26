@@ -59,8 +59,18 @@ public class ScriptEnemyMovement : MonoBehaviour
 
     [Tooltip("Stores a ray used for detecting walls.")]
     public Ray wallRay; //stores a ray used for wall detection
+    [Tooltip("Stores a ray used for detecting walls.")]
+    public Ray wallRayCenter; //stores a ray used for wall detection
+    [Tooltip("Stores a ray used for detecting walls.")]
+    public Ray wallRayRight; //stores a ray used for wall detection
     [Tooltip("Cautino - Stores a layermask for wallRay's cast.")]
-    public LayerMask wallMask = 8; //the wall layermask is stored here...
+    public LayerMask wallMask; //the wall layermask is stored here...
+
+
+    //public NavMeshAgent navi;
+    //public bool useNavmesh = false;
+    //public bool navcheckonce = false; //if we have switched over to using navigation, true
+    //public bool offGrid = false; //set this variable to true during try-catch if the try fails; this means this agent is off of the navmesh and needs to be put back on;
     void Awake()
     {
         //this did something at one point, but it's job was outsourced
@@ -88,6 +98,9 @@ public class ScriptEnemyMovement : MonoBehaviour
         {
             //if (firstRun) { thisParent = GetComponentInParent<Transform>(); }
             //else
+
+            //if (this.gameObject.GetComponent<NavMeshAgent>() != null)
+            //    navi = this.gameObject.GetComponent<NavMeshAgent>();
             Debug.Log("ONEnableHasRun");
             isMovementRunning = true; //set variable to true
             
@@ -168,100 +181,238 @@ public class ScriptEnemyMovement : MonoBehaviour
                 //	this.enabled = false;} 
                 //else 
                 {
-                    if (isMovementRunning)
+                    //Debug.Log(navi);
+                    if (isMovementRunning /*&& navi == null*/)
                     {
-                        wallRay = new Ray(transform.InverseTransformPoint(transform.position),Vector3.forward*detect.detectSphere.radius); //need to grab local data
-                        
-                        //Debug.DrawRay(this.gameObject.transform.position, playerLoc, Color.green);
+                        wallRay = new Ray(transform.position, transform.forward * detect.detectSphere.radius); //need to grab local data
+                        //Debug.Log(Vector3.forward * detect.detectSphere.radius + "detectraydius");
+                        Debug.DrawRay(this.gameObject.transform.position, playerLoc, Color.green);
                         RaycastHit wallRayHit;
                         if(Physics.Raycast(wallRay, out wallRayHit, detect.detectSphere.radius, wallMask))
                         {
                             Debug.Log(wallRayHit.collider.name + " " + wallRayHit.distance);
                             Debug.Log(wallRayHit.collider.tag);
                             if (wallRayHit.collider.transform.tag == "Barrier")
-                                isMovementRunning = false;
+                                this.enabled = false;
                         }
                         
                     }
-                    if (isMovementRunning)
+                    //if (isMovementRunning && navi != null && navi.enabled)
+                    //{
+                    //    navi.updateRotation = true;
+                    //    if (navi.areaMask == 0) //this thing is in binary, more checks to implement in the future
+                    //    {
+                    //        navi.areaMask = 1;
+                    //    }
+                    //    //navMesh raycasting is garbage; ignores anything that isn't part of the mesh, meaning we have to rework the mesh or use regular rays
+                    //    wallRay = new Ray(transform.position, Quaternion.AngleAxis(30, Vector3.up) * transform.forward * detect.detectSphere.radius); //need to grab local data
+                    //    wallRayCenter = new Ray(transform.position,  transform.forward * detect.detectSphere.radius);
+                    //    wallRayRight = new Ray(transform.position, Quaternion.AngleAxis(-30, Vector3.up) * transform.forward * detect.detectSphere.radius);
+
+                    //    //Debug.Log(wallRay + "wallray");
+                    //    //Debug.DrawRay(this.gameObject.transform.position, playerLoc, Color.green);
+                    //    RaycastHit wallRayHit;
+                    //    RaycastHit wallRayHitCenter;
+                    //    RaycastHit wallRayHitRight;
+                    //    Physics.Raycast(wallRay, out wallRayHit, detect.detectSphere.radius, wallMask);
+                    //    Physics.Raycast(wallRayCenter, out wallRayHitCenter, detect.detectSphere.radius, wallMask);
+                    //    Physics.Raycast(wallRayRight, out wallRayHitRight, detect.detectSphere.radius, wallMask);
+                    //    //Debug.Log(wallRayHit.distance + "wallrayhitdistance");
+                    //    Debug.DrawRay(transform.position, transform.forward * detect.detectSphere.radius, Color.yellow);
+                    //    Debug.DrawRay(transform.position, Quaternion.AngleAxis(30, Vector3.up) * transform.forward * detect.detectSphere.radius, Color.yellow);
+                    //    Debug.DrawRay(transform.position, Quaternion.AngleAxis(-30, Vector3.up) * transform.forward * detect.detectSphere.radius, Color.yellow);
+
+                    //    if (Physics.Raycast(transform.position, transform.forward * detect.detectSphere.radius, out wallRayHit, detect.detectSphere.radius, wallMask))
+                    //    {
+                    //        //RayCastSwitchFunction(wallRay, wallRayHit);
+                    //    }
+                    //    else if(Physics.Raycast(wallRayCenter, out wallRayHitCenter, detect.detectSphere.radius, wallMask))
+                    //    {
+                    //        //RayCastSwitchFunction(wallRayCenter, wallRayHitCenter);
+                    //    }
+                    //    else if(Physics.Raycast(wallRayRight, out wallRayHitRight, detect.detectSphere.radius, wallMask))
+                    //    {
+                    //        //RayCastSwitchFunction(wallRayRight, wallRayHitRight);
+                    //    }
+                    //    else
+                    //    {
+                    //        SwitchToKinematicMovement();
+                    //    }
+                            
+
+                    }
+                //if (isMovementRunning && navi != null && navi.enabled) //this whole thing was a grand experiment, but doesn't work the way we need it to; causing more problems than it solves
+                //{
+                //    //this one is used for enemies with navmeshagents
+                //    if (Mathf.Abs(Vector3.Distance(this.transform.position, moveEnd.transform.position)) > attackSphere.radius)
+                //    {
+                //        //Debug.Log ("lerpcheck" + isLerping);
+                //        if (fracJourney < 1) //is the object at the end of the lerp?
+                //        {
+                //            // Debug.Log(fracJourney + "fracjourney");
+                //            // Debug.Log("player distance: " + Vector3.Distance(transform.position, moveEnd.position));
+                //            // Debug.Log("endpos" + endPos);
+                //            //Debug.Log("mathtarget " + (moveEnd.position - (playerExents + myExtents)));
+                //            if (endPos != moveEnd.GetComponent<Collider>().bounds.ClosestPoint(startPos))
+                //            {
+                //                //  Debug.Log("reset targeter");
+                //                fracJourney = 0;
+                //                distcovered = 0;
+                //                currentLerpTime = 0; //leave this line out for funky teleports
+                //                startPos = transform.position;
+                //                //endPos = moveEnd.position - (playerExents + myExtents); //!!!!Try replacing with bounds.closestpoint and mesh.bounds
+                //                endPos = moveEnd.GetComponent<Collider>().bounds.ClosestPoint(startPos);
+                //                if (Mathf.Abs(playerExents.y - myExtents.y) < 3)
+                //                    endPos.y = this.gameObject.transform.position.y;
+                //                else
+                //                    endPos.y += playerExents.y - myExtents.y;
+                //                //   Debug.Log("Endpos before clamp" + endPos);
+                //                //endPos = Vector3.Normalize(endPos);
+                //                //endPos *= speed;
+
+                //                //   Debug.Log("endpos after clamp" + endPos);
+                //            }
+
+                //            currentLerpTime += Time.deltaTime;
+                //            if (currentLerpTime > lerpTime)
+                //            {
+                //                currentLerpTime = lerpTime;
+                //            }
+                //            fracJourney = currentLerpTime / lerpTime;
+                //            //insert separation functionality
+                //            //navi.Move(Vector3.MoveTowards(startPos, endPos, fracJourney * speed));
+                //            //Debug.Log(Vector3.MoveTowards(startPos, endPos, fracJourney * speed) + "movetowards stuff");
+                //            if(!useNavmesh)
+                //            {
+                //                if(navi.enabled)
+                //                navi.velocity = transform.forward * speed * 1.3f; //divide movetowards by anything and watch the fireworks
+                //                //navi.velocity /= 2;
+                //                //Debug.Log(navi.velocity + "navivelocity");
+                //                //navi.Move(Vector3.MoveTowards(startPos, endPos, fracJourney * speed));
+                //                if(navi.enabled)
+                //                navi.Stop();
+                //            }
+
+
+                //            //transform.position = Vector3.MoveTowards(startPos, endPos, fracJourney * speed);
+                //            //navi.SetDestination(endPos);
+
+                //            Vector3 blahVect = Vector3.RotateTowards(transform.forward, playerCollider.transform.position - transform.position, speed * Time.deltaTime, 0.0f);
+
+                //            //Vector3.ClampMagnitude(blahVect, detect.detectSphere.radius);
+                //            Debug.DrawRay(transform.position, blahVect, Color.magenta);
+
+                //            transform.GetComponent<Rigidbody>().rotation = Quaternion.LookRotation(blahVect);
+                //            //float blahAngle;
+                //            //blahAngle = Vector3.Angle(Vector3.forward, endPos);
+                //            //if(blahVect)
+                //            ////blahAngle = Mathf.Acos(Mathf.PI / 180 * endPos.z / endPos.magnitude) * 180 / Mathf.PI;
+                //            //transform.Rotate(Vector3.up, blahAngle, Space.Self);
+
+                //        }
+                //        else
+                //        {
+                //            Debug.Log("reached1");
+                //            //wait until player leaves attack range to reset values
+                //            //do attack stuff
+                //            //Debug.Log("player distance: " + Vector3.Distance(transform.position, moveEnd.position));
+                //            if (Vector3.Distance(transform.position, moveEnd.position) > attackSphere.radius)
+                //            {
+                //                Debug.Log("blahblahblah");
+                //                fracJourney = 0;
+                //                currentLerpTime = 0;
+                //                startPos = transform.position;
+                //                endPos = moveEnd.position - (playerExents + myExtents);
+                //                if (Mathf.Abs(playerExents.y - myExtents.y) < 1)
+                //                    endPos.y = this.gameObject.transform.position.y;
+                //                else
+                //                    endPos.y += playerExents.y - myExtents.y;
+                //                //endPos.magnitude = speed;
+                //            }
+                //            else { }
+
+                //        }
+                //    }
+                //}
+                if (isMovementRunning) //due to how the navmesh system works, it is essential to NOT use it when unnecessary; it isn't efficient and doesn't even work the way we need it to
+                {
+                    if (Mathf.Abs(Vector3.Distance(this.transform.position, moveEnd.transform.position)) > attackSphere.radius)
                     {
-                        if (Mathf.Abs(Vector3.Distance(this.transform.position, moveEnd.transform.position)) > attackSphere.radius)
+                        Debug.Log("lerpcheck" + isLerping);
+                        if (fracJourney < 1) //is the object at the end of the lerp?
                         {
-                            //Debug.Log ("lerpcheck" + isLerping);
-                            if (fracJourney < 1) //is the object at the end of the lerp?
+                            // Debug.Log(fracJourney + "fracjourney");
+                            // Debug.Log("player distance: " + Vector3.Distance(transform.position, moveEnd.position));
+                            // Debug.Log("endpos" + endPos);
+                            //Debug.Log("mathtarget " + (moveEnd.position - (playerExents + myExtents)));
+                            if (endPos != moveEnd.GetComponent<Collider>().bounds.ClosestPoint(startPos))
                             {
-                                // Debug.Log(fracJourney + "fracjourney");
-                                // Debug.Log("player distance: " + Vector3.Distance(transform.position, moveEnd.position));
-                                // Debug.Log("endpos" + endPos);
-                                //Debug.Log("mathtarget " + (moveEnd.position - (playerExents + myExtents)));
-                                if (endPos != moveEnd.GetComponent<Collider>().bounds.ClosestPoint(startPos))
-                                {
-                                    //  Debug.Log("reset targeter");
-                                    fracJourney = 0;
-                                    distcovered = 0;
-                                    currentLerpTime = 0; //leave this line out for funky teleports
-                                    startPos = transform.position;
-                                    //endPos = moveEnd.position - (playerExents + myExtents); //!!!!Try replacing with bounds.closestpoint and mesh.bounds
-                                    endPos = moveEnd.GetComponent<Collider>().bounds.ClosestPoint(startPos);
-                                    if (Mathf.Abs(playerExents.y - myExtents.y) < 3)
-                                        endPos.y = this.gameObject.transform.position.y;
-                                    else
-                                        endPos.y += playerExents.y - myExtents.y;
-                                    //   Debug.Log("Endpos before clamp" + endPos);
-                                    //endPos = Vector3.Normalize(endPos);
-                                    //endPos *= speed;
+                                //  Debug.Log("reset targeter");
+                                fracJourney = 0;
+                                distcovered = 0;
+                                currentLerpTime = 0; //leave this line out for funky teleports
+                                startPos = transform.position;
+                                //endPos = moveEnd.position - (playerExents + myExtents); //!!!!Try replacing with bounds.closestpoint and mesh.bounds
+                                endPos = moveEnd.GetComponent<Collider>().bounds.ClosestPoint(startPos);
+                                if (Mathf.Abs(playerExents.y - myExtents.y) < 3)
+                                    endPos.y = this.gameObject.transform.position.y;
+                                else
+                                    endPos.y += playerExents.y - myExtents.y;
+                                //   Debug.Log("Endpos before clamp" + endPos);
+                                //endPos = Vector3.Normalize(endPos);
+                                //endPos *= speed;
 
-                                    //   Debug.Log("endpos after clamp" + endPos);
-                                }
-                                currentLerpTime += Time.deltaTime;
-                                if (currentLerpTime > lerpTime)
-                                {
-                                    currentLerpTime = lerpTime;
-                                }
-                                fracJourney = currentLerpTime / lerpTime;
-                                //insert separation functionality
-                                transform.position = Vector3.MoveTowards(startPos, endPos, fracJourney * speed);
-                                
-                                Vector3 blahVect = Vector3.RotateTowards(transform.forward, playerCollider.transform.position - transform.position, speed * Time.deltaTime, 0.0f);
-                                
-                                //Vector3.ClampMagnitude(blahVect, detect.detectSphere.radius);
-                                Debug.DrawRay(transform.position, blahVect, Color.magenta);
-                                
-                                transform.GetComponent<Rigidbody>().rotation = Quaternion.LookRotation(blahVect);
-                                //float blahAngle;
-                                //blahAngle = Vector3.Angle(Vector3.forward, endPos);
-                                //if(blahVect)
-                                ////blahAngle = Mathf.Acos(Mathf.PI / 180 * endPos.z / endPos.magnitude) * 180 / Mathf.PI;
-                                //transform.Rotate(Vector3.up, blahAngle, Space.Self);
-
+                                //   Debug.Log("endpos after clamp" + endPos);
                             }
-                            else
+                            currentLerpTime += Time.deltaTime;
+                            if (currentLerpTime > lerpTime)
                             {
-                                Debug.Log("reached1");
-                                //wait until player leaves attack range to reset values
-                                //do attack stuff
-                                //Debug.Log("player distance: " + Vector3.Distance(transform.position, moveEnd.position));
-                                if (Vector3.Distance(transform.position, moveEnd.position) > attackSphere.radius)
-                                {
-                                    Debug.Log("blahblahblah");
-                                    fracJourney = 0;
-                                    currentLerpTime = 0;
-                                    startPos = transform.position;
-                                    endPos = moveEnd.position - (playerExents + myExtents);
-                                    if (Mathf.Abs(playerExents.y - myExtents.y) < 1)
-                                        endPos.y = this.gameObject.transform.position.y;
-                                    else
-                                        endPos.y += playerExents.y - myExtents.y;
-                                    //endPos.magnitude = speed;
-                                }
-                                else { }
-
+                                currentLerpTime = lerpTime;
                             }
+                            fracJourney = currentLerpTime / lerpTime;
+                            //insert separation functionality
+                            transform.position = Vector3.MoveTowards(startPos, endPos, fracJourney * speed);
+
+                            Vector3 blahVect = Vector3.RotateTowards(transform.forward, playerCollider.transform.position - transform.position, speed * Time.deltaTime, 0.0f);
+
+                            //Vector3.ClampMagnitude(blahVect, detect.detectSphere.radius);
+                            Debug.DrawRay(transform.position, blahVect, Color.magenta);
+
+                            transform.GetComponent<Rigidbody>().rotation = Quaternion.LookRotation(blahVect);
+                            //float blahAngle;
+                            //blahAngle = Vector3.Angle(Vector3.forward, endPos);
+                            //if(blahVect)
+                            ////blahAngle = Mathf.Acos(Mathf.PI / 180 * endPos.z / endPos.magnitude) * 180 / Mathf.PI;
+                            //transform.Rotate(Vector3.up, blahAngle, Space.Self);
+
+                        }
+                        else
+                        {
+                            Debug.Log("reached1");
+                            //wait until player leaves attack range to reset values
+                            //do attack stuff
+                            //Debug.Log("player distance: " + Vector3.Distance(transform.position, moveEnd.position));
+                            if (Vector3.Distance(transform.position, moveEnd.position) > attackSphere.radius)
+                            {
+                                Debug.Log("blahblahblah");
+                                fracJourney = 0;
+                                currentLerpTime = 0;
+                                startPos = transform.position;
+                                endPos = moveEnd.position - (playerExents + myExtents);
+                                if (Mathf.Abs(playerExents.y - myExtents.y) < 1)
+                                    endPos.y = this.gameObject.transform.position.y;
+                                else
+                                    endPos.y += playerExents.y - myExtents.y;
+                                //endPos.magnitude = speed;
+                            }
+                            else { }
+
                         }
                     }
-                    
                 }
+
             }
+            
 
 
             //if (isLerping) {
@@ -335,6 +486,55 @@ public class ScriptEnemyMovement : MonoBehaviour
 
     //    transform.GetComponent<Rigidbody>().rotation = Quaternion.LookRotation(blahVect);
     //    yield return new WaitForSeconds(0); //am i doing this right?
+    //}
+
+    //public void RayCastSwitchFunction(Ray thisRay, RaycastHit whichHit)
+    //{
+    //    Debug.Log(whichHit.collider.name + " " + whichHit.distance);
+    //    Debug.Log(whichHit.collider.tag);
+    //    if (whichHit.collider.transform.tag == "Barrier")
+    //    {
+    //        Debug.Log("usemeshnow");
+    //        useNavmesh = true;
+
+    //        if (!navcheckonce)
+    //        {
+    //            //navi.velocity = Vector3.zero;
+    //            //if (navi.enabled)
+    //            //{
+    //            //    navi.Stop();
+    //            //    navi.Resume();
+    //            //    navi.ResetPath();
+    //            //}
+    //            navcheckonce = true;
+    //        }
+    //        if (navi.enabled)
+    //        {
+                
+    //            navi.destination = (new Vector3(moveEnd.GetComponent<Collider>().bounds.ClosestPoint(startPos).x, moveEnd.GetComponent<Collider>().bounds.ClosestPoint(startPos).y + navi.height, moveEnd.GetComponent<Collider>().bounds.ClosestPoint(startPos).z));
+                
+    //            rotate.canRotate = false;
+    //            navi.updateRotation = true;
+    //            //NavMeshPath whichPath = new NavMeshPath();
+    //            //if(navi.CalculatePath(moveEnd.GetComponent<Collider>().bounds.ClosestPoint(startPos), whichPath))
+    //            //{
+    //            //    navi.path = whichPath;
+    //            //}
+    //        }
+                
+    //        Debug.Log(navi.destination + "navdest");
+    //    }
+    //}
+
+    //public void SwitchToKinematicMovement()
+    //{
+    //    Debug.Log("notusingmesh");
+    //    useNavmesh = false;
+    //    if (navi.enabled)
+    //        navi.Stop();
+    //    navcheckonce = false;
+    //    rotate.canRotate = true;
+    //    navi.updateRotation = false;
     //}
 }
 

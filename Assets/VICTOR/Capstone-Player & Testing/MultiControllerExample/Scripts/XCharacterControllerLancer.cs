@@ -51,6 +51,10 @@ public class XCharacterControllerLancer : MonoBehaviour {
     public bool testButtonInputs = true;
     [Tooltip("Canvas gameobject that dictates the actions of Pausing the game.")]
     public GameObject pauseCanvas;
+    [Tooltip("Particle Effect gameobject to show max speed.")]
+    public GameObject maxSpeedEffect;
+    [Tooltip("Animator used to show off attacks and other cool effects.")]
+    public Animator anim;
     [Tooltip("Script to turn on attack colliders.")]
     public PlayerAttackScript attackScript;
     //previous and current states of the controller for the specific index
@@ -68,10 +72,18 @@ public class XCharacterControllerLancer : MonoBehaviour {
 
     public float smooth = 5.0f;
 
+    public float groundDist;
+    public float grav;
+    public float gravStep = 0.1f;
+    public float maxGrav = -2f;
+
     void Awake()
     {
         pauseCanvas = GameObject.Find("PauseCanvas");
         attackScript.playerIndex = playerIndex;
+        maxSpeedEffect.SetActive(false);
+        anim = GetComponent<Animator>();
+        groundDist = GetComponent<Collider>().bounds.size.y;
         //camera = GameObject.Find("Main Camera").GetComponent<Camera>();
         //pauseScript.pCanvas = GameObject.Find("Main Camera").GetComponent<PauseBehaviorScript>().pCanvas;
     }
@@ -207,6 +219,8 @@ public class XCharacterControllerLancer : MonoBehaviour {
         {
             if (attackScript.canAttack)
             {
+                //anim.SetBool("DidSwipe", false);
+                anim.SetTrigger("Swipey");
                 attackScript.StartLanceAttack();
             }
         }
@@ -221,6 +235,27 @@ public class XCharacterControllerLancer : MonoBehaviour {
             }
         }
 
+        //SHIELD ACTIVATE BY PRESSING LEFT SHOULDER BUTTON
+        if (previousState.Buttons.LeftShoulder == ButtonState.Released &&
+            currentState.Buttons.LeftShoulder == ButtonState.Pressed)
+        {
+            if (attackScript.canAttack)
+            {
+                anim.SetTrigger("Blockey");
+                attackScript.StartShield();
+                //anim.SetBool("DidBlock", true);
+            }
+        }
+
+        //Turn on the max speed effect if at highest speed variable
+        if(timeGearShift >= gearShiftTime3 && maxSpeedEffect.activeSelf == false)
+        {
+            maxSpeedEffect.SetActive(true);
+        }
+        else if(timeGearShift < gearShiftTime3 && maxSpeedEffect.activeSelf == true)
+        {
+            maxSpeedEffect.SetActive(false);
+        }
 
         previousState = currentState;
     }
@@ -230,11 +265,20 @@ public class XCharacterControllerLancer : MonoBehaviour {
         //Vector3 velocity = GetComponent<Rigidbody>().velocity;
         //velocity.x = moveJoy.x * moveSpeed;
         //velocity.z = moveJoy.y * moveSpeed;
+        if (IsGrounded())
+        {
+            grav = 0;
+        }
+        else
+        {
+            grav = (grav >= maxGrav ? maxGrav : grav - gravStep);
 
+        }
         //Vector3 velocity = Vector3.forward * moveSpeed;
         //Vector3 velocity = transform.TransformDirection(Vector3.forward * moveSpeed);
         Vector3 velocity = transform.position;
         velocity += transform.TransformDirection(Vector3.forward * moveSpeed);
+        velocity.y = grav;
         //velocity.y = GetComponent<Rigidbody>().velocity.y;
         //  fail. Boomerang action. Thought I could get away with it because
         //  the start and end points move with the character
@@ -326,5 +370,10 @@ public class XCharacterControllerLancer : MonoBehaviour {
             GUI.color = Color.black;
             GUI.Label(new Rect(screenPos.x, Screen.height - screenPos.y, 100, 100), playerIndex.ToString());
         }
+    }
+
+    bool IsGrounded()
+    {
+        return Physics.Raycast(transform.position, Vector3.down, groundDist + 0.1f);
     }
 }

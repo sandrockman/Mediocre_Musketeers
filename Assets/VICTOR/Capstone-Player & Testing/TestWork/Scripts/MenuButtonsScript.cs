@@ -44,7 +44,7 @@ public class MenuButtonsScript : MonoBehaviour {
         if (StaticSpawnController.GetSetPlayers() != 0)
         {
             Debug.Log("Starting Level...");
-            SceneManager.LoadScene("test_level_FINAL");
+            SceneManager.LoadScene("Level 1");
         }
         else
             Debug.Log("Needs at least one player entered.");
