@@ -191,6 +191,7 @@
     <None Include="Assets\KATIE\Exported\DONOT_DELETE\Shader\pb_VertexShader.shader" />
     <None Include="Assets\LAMONT\Test.txt" />
     <None Include="Assets\LAMONT\test2.txt" />
+    <None Include="Assets\LAMONT\test3.txt" />
     <None Include="Assets\ProCore\ProBuilder\Shader\pb_StandardVertexColor.shader" />
     <None Include="Assets\XInputDotNet\MITLicense.txt" />
     <None Include="Assets\XWeaponTrail\Shader\xft_displacement_screen.shader" />
